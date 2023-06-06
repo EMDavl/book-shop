@@ -99,7 +99,7 @@ object BookStorage {
     override def findPage(limit: Int, offset: Long): IOWithRequestContext[Either[CommonError, List[Book]]] = {
       surroundWithLogs[CommonError, List[Book]]("Getting books page") {
         error =>
-          (s"Error while fetching books page: ${error.message}", error.cause)
+          (s"Error while fetching books page: ${error.message} ${error.cause}", error.cause)
       } {
         _ =>
           s"Books page successfully fetched"
@@ -118,7 +118,7 @@ object BookStorage {
     override def findAllByAuthorId(id: Id): IOWithRequestContext[Either[InternalError, List[Book]]] = {
       surroundWithLogs[InternalError, List[Book]](s"Getting books by author id ${id.value}") {
         errors =>
-          (s"Error while fetching books by author id. ${errors.message}", errors.cause)
+          (s"Error while fetching books by author id. ${errors.message} ${errors.cause}", errors.cause)
       } {
         _ =>
           (s"Successfully fetched books by author id ${id.value}")
@@ -128,7 +128,7 @@ object BookStorage {
     override def updateBook(book: Book): IOWithRequestContext[Either[CommonError, Book]] = {
       surroundWithLogs[CommonError, Book](s"Updating book: ${book}") {
         errors =>
-          (s"Error while updating book. ${errors.message}", errors.cause)
+          (s"Error while updating book. ${errors.message} ${errors.cause}", errors.cause)
       } {
         _ =>
           (s"Successfully updated book with id ${book.id.value}")
@@ -148,7 +148,7 @@ object BookStorage {
     override def createBook(book: BookWithoutId): IOWithRequestContext[Either[CommonError, Book]] = {
       surroundWithLogs[CommonError, Book](s"Creating book: ${book}") {
         errors =>
-          (s"Error while creating book. ${errors.message}", errors.cause)
+          (s"Error while creating book. ${errors.message} ${errors.cause}", errors.cause)
       } {
         result =>
           (s"Successfully created book with id ${result.id.value}")

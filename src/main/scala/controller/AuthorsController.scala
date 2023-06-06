@@ -3,6 +3,7 @@ package controller
 import cats.effect.IO
 import cats.syntax.either._
 import controller.endpoints._
+import domain.AuthorWithoutId
 import sttp.tapir.server.ServerEndpoint
 import domain.errors._
 import service._
@@ -32,7 +33,7 @@ object AuthorsController {
 
     override def findByFirstAndLastName: ServerEndpoint[Any, IO] =
       findByFirstNameAndLastNameAuthorEndpoint.serverLogic {
-        case (ctx, author) => storage.findAuthorByFirstNameAndLastName(author).map(_.leftMap[CommonError](identity)).run(ctx)
+        case (ctx, firstName, lastName) => storage.findAuthorByFirstNameAndLastName(AuthorWithoutId(firstName, lastName)).map(_.leftMap[CommonError](identity)).run(ctx)
       }
 
     override def createAuthor: ServerEndpoint[Any, IO] =

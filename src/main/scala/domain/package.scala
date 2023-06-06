@@ -8,7 +8,8 @@ import sttp.tapir.CodecFormat.TextPlain
 import sttp.tapir.{Codec, Schema}
 import tofu.logging.derivation._
 
-import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.time.{Instant, LocalDate, LocalDateTime}
 package object domain {
 
 
@@ -63,13 +64,13 @@ package object domain {
 
   @derive(loggable, encoder, decoder)
   @newtype
-  case class PublishDate(value: Instant)
+  case class PublishDate(value: LocalDate)
   object PublishDate {
     implicit val doobieRead: Read[PublishDate] =
-      Read[Long].map(ts => PublishDate(Instant.ofEpochMilli(ts)))
+      Read[String].map(ts => PublishDate(LocalDate.parse(ts)))
     implicit val schema: Schema[PublishDate] = Schema.schemaForString.map(n =>
-      Some(PublishDate(Instant.parse(n)))
-    )(_.value.toString)
+      Some(PublishDate(LocalDate.parse(n)))
+    )(_.value.format(DateTimeFormatter.ISO_LOCAL_DATE))
 
   }
 

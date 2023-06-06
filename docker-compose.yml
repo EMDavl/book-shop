@@ -12,7 +12,7 @@ services:
     volumes:
       - ./dockerData:/docker-entrypoint-initdb.d
 
-  todos:
+  library:
     image: docker.io/library/book-shop:0.1.0-SNAPSHOT
     environment:
       DB_URL: postgresdb

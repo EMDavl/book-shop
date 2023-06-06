@@ -24,8 +24,6 @@ libraryDependencies ++= Seq(
   "com.github.pureconfig" %% "pureconfig" % "0.17.4",
   "org.http4s" %% "http4s-ember-server" % "0.23.19",
   "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle" % "1.5.0",
-  "org.scalatest" %% "scalatest" % "3.2.8" % Test,
-  "org.scalatestplus" %% "scalatestplus-mockito" % "1.0.0-M2" % Test
 )
 
 dependencyOverrides += "io.circe" %% "circe-core" % "0.14.3"

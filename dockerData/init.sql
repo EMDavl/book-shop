@@ -14,8 +14,8 @@ create table books
 (
     id           numeric      not null default nextval('books_id_seq'::regclass),
     book_name    varchar(512) not null,
-    author_id    numeric      not null REFERENCES authors (id),
-    publish_date varchar(128),
+    author_id    numeric      not null REFERENCES authors (id) ON DELETE CASCADE,
+    publish_date date,
 
     PRIMARY KEY (id)
 );
@@ -29,4 +29,4 @@ insert into books(book_name, author_id, publish_date) VALUES
                                                           ('How to do whole project in one day', 1, now()),
                                                           ('how to stay up all night because you left a project to the last day', 2, now()),
                                                           ('Start postponing things for later, rest now', 3, now()),
-                                                          ('Start early? Am I weak?', 1, now())
+                                                          ('Start early? Am I weak?', 1, now());

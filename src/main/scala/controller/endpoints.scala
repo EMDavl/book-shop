@@ -33,11 +33,12 @@ object endpoints {
       .errorOut(jsonBody[CommonError])
       .out(jsonBody[Option[Author]])
 
-  val findByFirstNameAndLastNameAuthorEndpoint: Endpoint[Unit, (RequestContext, AuthorWithoutId), CommonError, Option[Author], Any] =
+  val findByFirstNameAndLastNameAuthorEndpoint: Endpoint[Unit, (RequestContext, AuthorFirstName, AuthorLastName), CommonError, Option[Author], Any] =
     authorsEndpoint.get
       .in(header[RequestContext]("X-Request-Id"))
       .in("find")
-      .in(jsonBody[AuthorWithoutId])
+      .in(query[AuthorFirstName]("firstName"))
+      .in(query[AuthorLastName]("lastName"))
       .errorOut(jsonBody[CommonError])
       .out(jsonBody[Option[Author]])
 
@@ -80,7 +81,7 @@ object endpoints {
   val findAllByAuthorIdEndpoint: Endpoint[Unit, (RequestContext, Id), CommonError, List[Book], Any] =
     booksEndpoint.get
       .in(header[RequestContext]("X-Request-Id"))
-      .in("author" / path[Id])
+      .in("author" / path[Id](name = "id"))
       .errorOut(jsonBody[CommonError])
       .out(jsonBody[List[Book]])
 

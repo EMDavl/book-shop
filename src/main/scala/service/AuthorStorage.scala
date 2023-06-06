@@ -137,7 +137,7 @@ object AuthorStorage {
     override def removeAuthor(id: Id): IOWithRequestContext[Either[CommonError, Unit]] =
       surroundWithLogs[CommonError, Unit](s"Removing author with id: ${id.value}") {
         errors =>
-          (s"Error while removing author. ${errors.message}", errors.cause)
+          (s"Error while removing author. ${errors.message} ${errors.cause}", errors.cause)
       } {
         result =>
           (s"Successfully removed author with id ${id.value}")
@@ -161,7 +161,7 @@ object AuthorStorage {
     implicit val logs =
       Logging.Make
         .contextual[IOWithRequestContext, RequestContext]
-        .forService[BookStorage]
+        .forService[AuthorStorage]
     val storage = new Impl(sql, transactor)
     new LoggingImpl(storage)
   }

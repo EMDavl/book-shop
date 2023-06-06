@@ -6,6 +6,8 @@ import domain._
 import doobie._
 import doobie.implicits._
 
+import java.time.format.DateTimeFormatter
+
 trait BookSql {
   def findPage(limit: Int, offset: Long): ConnectionIO[List[Book]]
 
@@ -30,17 +32,17 @@ object BookSql {
       sql"SELECT * FROM books b WHERE b.id = ${id.value}".query[Book]
 
     def findAllByAuthorIdSql(id: Id): Query0[Book] =
-      sql"SELECT * FROM books b b.author_id = ${id.value}".query[Book]
+      sql"SELECT * FROM books b WHERE b.author_id = ${id.value}".query[Book]
 
     def existsByAuthorIdAndNameAndPublishDate(book: BookWithoutId): Query0[Int] =
-      sql"SELECT 1 FROM books b WHERE b.author_id = ${book.authorId.value} AND lower(b.name) = lower(${book.name.value}) AND b.publish_date = ${book.publishDate.value.toEpochMilli}".query[Int]
+      sql"SELECT 1 FROM books b WHERE b.author_id = ${book.authorId.value} AND lower(b.book_name) = lower(${book.name.value}) AND b.publish_date = to_date(${book.publishDate.value.format(DateTimeFormatter.ofPattern("yyyyMMdd"))}, 'YYYYMMDD')".query[Int]
 
     def updateSql(book: Book): Update0 =
       sql"""
       UPDATE books SET
-                      name = ${book.name.value},
+                      book_name = ${book.name.value},
                       author_id = ${book.authorId.value},
-                      publish_date = ${book.publishDate.value.toEpochMilli}
+                      publish_date = to_date(${book.publishDate.value.format(DateTimeFormatter.ofPattern("yyyyMMdd"))}, 'YYYYMMDD')
                   WHERE id = ${book.id.value}
       """.update
 
@@ -48,7 +50,7 @@ object BookSql {
       sql"DELETE FROM books WHERE id = ${id.value}".update
 
     def createSql(book: BookWithoutId): Update0 =
-      sql"INSERT INTO books(name, author_id, publish_date) VALUES(${book.name.value}, ${book.authorId.value}, ${book.publishDate.value.toEpochMilli})".update
+      sql"INSERT INTO books(book_name, author_id, publish_date) VALUES(${book.name.value}, ${book.authorId.value}, to_date(${book.publishDate.value.format(DateTimeFormatter.ofPattern("yyyyMMdd"))}, 'YYYYMMDD'))".update
   }
 
   private final class Impl(authorSql: AuthorSql) extends BookSql {
@@ -78,8 +80,8 @@ object BookSql {
                 .option
                 .flatMap {
                   case None => (DataNotFound(book.id): CommonError).asLeft[Book].pure[ConnectionIO]
-                  case Some(fetchedBook) => updateSql(book).run.map {
-                    case 1 => fetchedBook.asRight[CommonError]
+                  case Some(_) => updateSql(book).run.map {
+                    case 1 => book.asRight[CommonError]
                   }: ConnectionIO[Either[CommonError, Book]]
                 }
             case Some(_) => (DataAlreadyExists(): CommonError).asLeft[Book].pure[ConnectionIO]
